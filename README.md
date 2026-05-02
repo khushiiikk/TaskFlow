@@ -37,4 +37,4 @@ A premium, full-stack team management application built with **FastAPI**, **Pyth
 This app is designed to be deployed on **Railway**. It automatically detects the `DATABASE_URL` environment variable for production PostgreSQL.
 
 ---
-*Created for AI/ML Role Application.*
+

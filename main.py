@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import os
 import logging
+import random
 
 # Reduce logging verbosity
 logging.getLogger("uvicorn").setLevel(logging.WARNING)
@@ -19,6 +20,10 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Team Task Manager")
 
+# Mock OTP storage (Phone -> OTP)
+# In production, use Redis or a proper DB table with expiry
+otp_store = {}
+
 # Authentication Routes
 @app.post("/api/auth/register", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -26,16 +31,19 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # First user is Admin
-    user_count = db.query(models.User).count()
-    role = models.Role.ADMIN if user_count == 0 else models.Role.MEMBER
+    # Check if phone is taken
+    if user.phone:
+        db_phone = db.query(models.User).filter(models.User.phone == user.phone).first()
+        if db_phone:
+            raise HTTPException(status_code=400, detail="Phone number already registered")
     
     hashed_password = auth.get_password_hash(user.password)
     db_user = models.User(
         email=user.email,
+        phone=user.phone,
         name=user.name,
         password=hashed_password,
-        role=role
+        role=user.role
     )
     db.add(db_user)
     db.commit()
@@ -58,7 +66,64 @@ def login(request: schemas.UserCreate, db: Session = Depends(get_db)):
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "name": user.name, "role": user.role}
+        "user": {
+            "id": user.id, 
+            "email": user.email, 
+            "phone": user.phone,
+            "name": user.name, 
+            "role": user.role
+        }
+    }
+
+@app.post("/api/auth/otp/send")
+def send_otp(request: dict, db: Session = Depends(get_db)):
+    phone = request.get("phone")
+    if not phone:
+        raise HTTPException(status_code=400, detail="Phone number required")
+    
+    user = db.query(models.User).filter(models.User.phone == phone).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Phone number not registered")
+    
+    # Generate 6-digit OTP
+    otp = str(random.randint(100000, 999999))
+    otp_store[phone] = otp
+    
+    print(f"--- [DEVELOPER MODE OTP] ---")
+    print(f"PHONE: {phone}")
+    print(f"OTP: {otp}")
+    print(f"---------------------------")
+    
+    return {"message": "OTP sent successfully", "otp": otp} # Returning OTP for assignment convenience
+
+@app.post("/api/auth/otp/verify")
+def verify_otp(request: dict, db: Session = Depends(get_db)):
+    phone = request.get("phone")
+    otp = request.get("otp")
+    
+    if phone not in otp_store or otp_store[phone] != otp:
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    
+    user = db.query(models.User).filter(models.User.phone == phone).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Clear OTP after use
+    del otp_store[phone]
+    
+    access_token = auth.create_access_token(
+        data={"sub": user.email, "role": user.role}
+    )
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user": {
+            "id": user.id, 
+            "email": user.email, 
+            "phone": user.phone,
+            "name": user.name, 
+            "role": user.role
+        }
     }
 
 # Project Routes
@@ -126,7 +191,7 @@ def update_task(task_id: int, task_update: schemas.TaskUpdate, db: Session = Dep
     return db_task
 
 # User Routes (for task assignment)
-@app.get("/api/users", response_model=List[schemas.UserBase])
+@app.get("/api/users", response_model=List[schemas.User])
 def read_users(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_admin_user)):
     return db.query(models.User).all()
 
@@ -139,16 +204,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/{full_path:path}")
 async def serve_spa(request: Request, full_path: str):
-    # If it's an API route that didn't match, let it 404
     if full_path.startswith("api/"):
         raise HTTPException(status_code=404)
     
-    # Otherwise serve index.html for SPA routing
     index_path = os.path.join("static", "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     
-    return HTMLResponse("<h1>Frontend files missing! Please add static/index.html</h1>")
+    return HTMLResponse("<h1>Frontend files missing!</h1>")
 
 if __name__ == "__main__":
     import uvicorn

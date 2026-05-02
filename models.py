@@ -18,6 +18,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+    phone = Column(String, unique=True, index=True, nullable=True)
     name = Column(String)
     password = Column(String)
     role = Column(SQLEnum(Role), default=Role.MEMBER)

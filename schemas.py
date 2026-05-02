@@ -5,10 +5,12 @@ from models import Role, TaskStatus
 
 class UserBase(BaseModel):
     email: EmailStr
+    phone: Optional[str] = None
     name: str
 
 class UserCreate(UserBase):
     password: str
+    role: Role = Role.MEMBER
 
 class User(UserBase):
     id: int

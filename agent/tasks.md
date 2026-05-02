@@ -1,0 +1,15 @@
+# Tasks list
+- [x] Create implementation plan
+- [x] Setup Next.js application
+  - [x] Configure Next.js
+  - [x] Install Prisma and setup database
+- [x] Configure PostgreSQL schema
+- [x] Build UI
+  - [x] Navbar
+  - [x] Dashboard
+  - [x] Project Management
+  - [x] Task Management
+- [x] Setup Authentication
+- [x] Implement backend APIs
+- [x] Add deployment configuration
+- [x] Create step-by-step documentation

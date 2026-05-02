@@ -1,33 +1,58 @@
-# Team Task Manager Implementation Plan
+# Transition to Python/FastAPI Stack
 
-This plan outlines the architecture, features, and deployment steps for the Team Task Manager full-stack web application.
+The project will be rewritten from Next.js to a Python-based stack using FastAPI, SQLAlchemy, and a Vanilla Frontend (HTML/CSS/JS). This aligns with the user's career focus on AI/ML roles.
 
-## Architecture
-- **Frontend framework**: Next.js 14+ (App Router)
-- **Styling**: Vanilla CSS (Modern, dynamic, glassmorphism, responsive)
-- **Database ORM**: Prisma
-- **Authentication**: Custom JWT / Cookie-based authentication
-- **Deployment**: Railway via GitHub integration
+## User Review Required
 
-## Features Breakdown
+> [!IMPORTANT]
+> This is a complete rewrite. All existing Next.js code will be replaced with Python/FastAPI code.
+> We will use **PostgreSQL** on Railway for deployment instead of SQLite, as SQLite is not suitable for persistent storage on Railway's serverless environment. Locally, you can use SQLite.
 
-### 1. Database Schema
-- **User**: `id`, `name`, `email`, `password` (hashed), `role` (ADMIN, MEMBER)
-- **Project**: `id`, `name`, `description`, `createdAt`
-- **Task**: `id`, `title`, `description`, `status` (TODO, IN_PROGRESS, DONE), `dueDate`, `projectId`, `assignedToId`
+## Proposed Changes
 
-### 2. Authentication Flow
-- `/register`: Users can sign up. First user automatically determines ADMIN role, others default to MEMBER.
-- `/login`: Standard email/password login.
-- Middleware protects routes based on authentication and role.
+### Backend (Python/FastAPI)
 
-### 3. Application Pages
-- **Dashboard (`/dashboard`)**: Overview of projects, tasks assigned to the current user, and overdue tasks.
-- **Projects (`/projects`)**: List of all projects (Admins can create).
-- **Tasks (`/tasks`)**: List of tasks, dropdown to update status. Admins can assign tasks to members.
+#### [NEW] [main.py](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/main.py)
+The main FastAPI application file handling routing and static file serving.
 
-### 4. UI/UX Design System
-The app features a premium aesthetic.
-- **Color Palette**: Dark mode by default, sleek glassmorphism panels, and vibrant accent colors.
-- **Typography**: Google Fonts (Outfit) for clean readability.
-- **Interactions**: Subtle hover micro-animations and smooth page transitions.
+#### [NEW] [database.py](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/database.py)
+SQLAlchemy engine and session configuration.
+
+#### [NEW] [models.py](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/models.py)
+Database models: `User`, `Project`, `Task`.
+
+#### [NEW] [auth.py](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/auth.py)
+JWT authentication logic, password hashing, and role-based access control.
+
+#### [NEW] [schemas.py](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/schemas.py)
+Pydantic models for API request/response validation.
+
+### Frontend (Vanilla)
+
+#### [NEW] [static/index.html](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/static/index.html)
+Single Page Application (SPA) entry point.
+
+#### [NEW] [static/style.css](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/static/style.css)
+Premium Glassmorphism CSS.
+
+#### [NEW] [static/script.js](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/static/script.js)
+Frontend logic using Fetch API for backend communication.
+
+### Configuration
+
+#### [MODIFY] [railway.json](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/railway.json)
+Updated to use Python builder.
+
+#### [NEW] [requirements.txt](file:///c:/Users/hp/Downloads/New%20folder/Assignment%20Team%20Task%20Manager/requirements.txt)
+Python dependencies (fastapi, uvicorn, sqlalchemy, psycopg2-binary, passlib, python-jose).
+
+## Verification Plan
+
+### Automated Tests
+- Manual API testing via Swagger UI (`/docs`).
+
+### Manual Verification
+1. Run `uvicorn main:app --reload` locally.
+2. Verify Auth flow (Register/Login).
+3. Verify Project/Task CRUD.
+4. Verify deployment on Railway.

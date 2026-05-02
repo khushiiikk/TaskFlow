@@ -1,4 +1,5 @@
 import os
+import hashlib
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -13,19 +14,17 @@ SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-python-key-123")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440 # 24 hours
 
-import hashlib
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 
 def verify_password(plain_password, hashed_password):
-    # Hash with SHA256 first to handle long passwords, then verify
-    hashed = hashlib.sha256(plain_password.encode()).hexdigest()
+    # Hash with SHA256 first to keep it under 72 bytes, then verify
+    hashed = hashlib.sha256(plain_password.encode()).hexdigest()[:72]
     return pwd_context.verify(hashed, hashed_password)
 
 def get_password_hash(password):
-    # Hash with SHA256 first to handle long passwords, then bcrypt
-    hashed = hashlib.sha256(password.encode()).hexdigest()
+    # Hash with SHA256 first to keep it under 72 bytes, then bcrypt
+    hashed = hashlib.sha256(password.encode()).hexdigest()[:72]
     return pwd_context.hash(hashed)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -45,10 +44,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         headers={"WWW-Authenticate": "Bearer"},
     )
     if not token:
-        # Check cookie if no bearer token (for browser simplicity)
-        from fastapi import Request
-        # Note: This is a hacky way to get request inside a dependency if not provided.
-        # But we'll just stick to the token for now.
         raise credentials_exception
         
     try:

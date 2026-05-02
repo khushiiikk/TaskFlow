@@ -13,14 +13,20 @@ SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-python-key-123")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440 # 24 hours
 
+import hashlib
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    # Hash with SHA256 first to handle long passwords, then verify
+    hashed = hashlib.sha256(plain_password.encode()).hexdigest()
+    return pwd_context.verify(hashed, hashed_password)
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # Hash with SHA256 first to handle long passwords, then bcrypt
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    return pwd_context.hash(hashed)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

@@ -42,7 +42,7 @@ export default async function Dashboard() {
       where: { assignedToId: session.id },
       orderBy: { updatedAt: 'desc' },
       take: 5,
-      include: { project: true }
+      include: { project: true, assignedTo: true }
     });
   }
 

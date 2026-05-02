@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Team Task Manager (Full-Stack)
 
-## Getting Started
+A premium, full-stack team management application built with **FastAPI**, **Python**, and **SQLAlchemy**. Designed for high performance and clean architecture.
 
-First, run the development server:
+## 🚀 Key Features
+- **Authentication**: JWT-based secure login and registration.
+- **Role-Based Access Control**:
+  - **Admin**: Create projects, assign tasks to members, and manage everything.
+  - **Member**: View assigned tasks and update progress.
+- **Project Management**: Organize work into distinct projects.
+- **Task Tracking**: Real-time status updates with a modern dashboard.
+- **Premium UI**: Dark-mode glassmorphism interface built with Vanilla HTML/CSS/JS.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ⚙️ Tech Stack
+- **Backend**: FastAPI (Python 3.9+), SQLAlchemy (ORM), SQLite (Local) / PostgreSQL (Production).
+- **Frontend**: Vanilla HTML5, CSS3 (Modern Glassmorphism), ES6+ JavaScript.
+- **Security**: Password hashing with Bcrypt, Authentication with Jose JWT.
+- **Deployment**: Railway (Nixpacks).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Local Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Run the Application**:
+   ```bash
+   python main.py
+   ```
+   *The app will be available at `http://localhost:8000`.*
 
-## Learn More
+3. **Explore API**:
+   Visit `http://localhost:8000/docs` to see the interactive Swagger API documentation.
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Deployment
+This app is designed to be deployed on **Railway**. It automatically detects the `DATABASE_URL` environment variable for production PostgreSQL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Created for AI/ML Role Application.*

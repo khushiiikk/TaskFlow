@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "preDeployCommand": "npx prisma db push --accept-data-loss",
-    "startCommand": "npm run start"
+    "startCommand": "python main.py",
+    "restartPolicyType": "ON_FAILURE"
   }
 }

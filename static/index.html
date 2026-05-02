@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dark">
+    <nav id="navbar" class="hidden">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🚀</span>
+                <span class="logo-text">TaskMaster</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+                <a href="#" onclick="showPage('projects')">Projects</a>
+                <a href="#" onclick="showPage('tasks')">My Tasks</a>
+            </div>
+            <div class="user-menu">
+                <span id="user-display-name"></span>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-container">
+        <!-- Auth Pages -->
+        <section id="login-page" class="page auth-page">
+            <div class="glass-card auth-card">
+                <h2>Welcome Back</h2>
+                <p>Login to manage your team tasks</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" required placeholder="admin@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <p class="auth-footer">Don't have an account? <a href="#" onclick="showPage('register')">Register</a></p>
+            </div>
+        </section>
+
+        <section id="register-page" class="page auth-page hidden">
+            <div class="glass-card auth-card">
+                <h2>Create Account</h2>
+                <p>Start managing your projects efficiently</p>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="register-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="register-email" required placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="register-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                </form>
+                <p class="auth-footer">Already have an account? <a href="#" onclick="showPage('login')">Login</a></p>
+            </div>
+        </section>
+
+        <!-- Main Pages -->
+        <section id="dashboard-page" class="page hidden">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+            </div>
+            <div class="stats-grid" id="dashboard-stats">
+                <!-- Stats injected here -->
+            </div>
+            <div class="dashboard-content">
+                <div class="glass-panel">
+                    <h3>Recent Tasks</h3>
+                    <div id="recent-tasks-list" class="task-list">
+                        <!-- Tasks injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects-page" class="page hidden">
+            <div class="page-header">
+                <h1>Projects</h1>
+                <button id="add-project-btn" class="btn btn-primary hidden" onclick="toggleModal('project-modal')">+ New Project</button>
+            </div>
+            <div class="projects-grid" id="projects-list">
+                <!-- Projects injected here -->
+            </div>
+        </section>
+
+        <section id="tasks-page" class="page hidden">
+            <div class="page-header">
+                <h1 id="tasks-title">Tasks</h1>
+                <button id="add-task-btn" class="btn btn-primary hidden" onclick="toggleModal('task-modal')">+ Add Task</button>
+            </div>
+            <div class="task-board" id="tasks-list">
+                <!-- Tasks injected here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <h3>Create Project</h3>
+            <form id="project-form">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="project-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="project-description"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('project-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="task-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <h3>Create Task</h3>
+            <form id="task-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="task-description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="task-status">
+                            <option value="TODO">To Do</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="DONE">Done</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" id="task-date">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Assign To</label>
+                    <select id="task-assignee">
+                        <option value="">Unassigned</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="toggleModal('task-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
